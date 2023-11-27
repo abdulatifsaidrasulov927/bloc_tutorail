@@ -28,7 +28,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     children: [
                       IconButton(
                           onPressed: () {
-                            // userListBloc(context).add(DeleteUser(user: user));
+                            //userListBloc(context).add(DeleteUser(user: user));
                           },
                           icon: const Icon(
                             Icons.delete,
