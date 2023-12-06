@@ -1,4 +1,8 @@
 import 'package:bloc_tutorail/blocs/bloc/user_list_bloc.dart';
+import 'package:bloc_tutorail/blocs/bloc/user_list_event.dart';
+import 'package:bloc_tutorail/blocs/bloc/user_list_state.dart';
+import 'package:bloc_tutorail/model/form_status.dart';
+import 'package:bloc_tutorail/model/user_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,46 +17,48 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
-      body: BlocBuilder<UserListBloc, UserListState>(
-        builder: (context, state) {
-          if (state is UserListUpdated && state.users.isNotEmpty) {
-            final users = state.users;
-            return ListView.builder(
-              itemBuilder: (context, index) {
-                final user = users[index];
-                return ListTile(
-                  title: Text(user.name),
-                  subtitle: Text(user.email),
-                  trailing: Row(
-                    children: [
-                      IconButton(
-                          onPressed: () {
-                            //userListBloc(context).add(DeleteUser(user: user));
-                          },
-                          icon: const Icon(
-                            Icons.delete,
-                            color: Colors.red,
-                          )),
-                      IconButton(
-                          onPressed: () {},
-                          icon: const Icon(
-                            Icons.edit,
-                            color: Colors.green,
-                          )),
-                    ],
-                  ),
-                );
-              },
-              itemCount: users.length,
-            );
-          } else {
-            return const Center(
-              child: Text('user not fond'),
-            );
-          }
-        },
+      appBar: AppBar(
+        title: const Text('Bloc Crud'),
       ),
+      backgroundColor: Colors.yellow,
+      body: Stack(
+        children: [
+          BlocConsumer<UserListBloc, UserListState>(
+            builder: (context, state) {
+              return ListView(
+                children: [
+                  ...List.generate(state.users.length, (index) {
+                    UserModel userModel = state.users[index];
+                    return ListTile(
+                      title: Text(
+                        '${userModel.id}',
+                      ),
+                    );
+                  })
+                ],
+              );
+            },
+            listener: (context, state) {},
+          ),
+          Visibility(
+            visible: context.watch<UserListBloc>().state.status ==
+                FormStatus.loading,
+            child: const Align(
+              child: CircularProgressIndicator(),
+            ),
+          )
+        ],
+      ),
+      floatingActionButton: Row(children: [
+        FloatingActionButton(
+          onPressed: () {
+            BlocProvider.of<UserListBloc>(context).add(AddUser(
+                newUser: UserModel(email: 'iegiue', name: 'ifefne', id: 6)));
+          },
+          heroTag: 'add',
+          child: const Icon(Icons.add),
+        ),
+      ]),
     );
   }
 }
